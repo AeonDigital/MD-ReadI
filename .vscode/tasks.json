@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Shell-Formatter",
+      "type": "shell",
+      "command": "${env:HOME}/.local/bin/shell_formatter/package.sh",
+      "args": [
+        "${file}"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "runOptions": {
+        "reevaluateOnRerun": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run MD-ReadI Formatter",
+      "type": "shell",
+      "command": "${env:HOME}/.local/bin/md_readi/package.sh",
+      "args": [
+        "${file}"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "runOptions": {
+        "reevaluateOnRerun": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
