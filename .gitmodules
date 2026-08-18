@@ -1,0 +1,3 @@
+[submodule ".dev/tools/githooks"]
+	path = .dev/tools/githooks
+	url = https://github.com/AeonDigital/Shell-DotDev-GitHooks
