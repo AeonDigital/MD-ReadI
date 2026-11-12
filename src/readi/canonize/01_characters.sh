@@ -52,7 +52,7 @@ declare -g SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS=""
 # 
 # Specification Links:
 # - Ref: Section 1.1 (Strict Encoding Directives & Legacy Terminal Compatibility)
-# - Ref: Section 1.2 (Content Constraints & Prohibited Elements — Negative Rules)
+# - Ref: Section 1.2 (Content Constraints & Prohibited Elements: Negative Rules)
 shell_md_readi_canonize_characters() {
   SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS=""
 
