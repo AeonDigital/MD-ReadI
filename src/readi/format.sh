@@ -375,5 +375,9 @@ shell_md_readi_format() {
 
   done
 
-  SHELL_MD_READI_RESULT_FORMAT="${output_buffer:0: -1}"
+  if [ -z "${output_buffer}" ]; then
+    SHELL_MD_READI_RESULT_FORMAT=""
+  else
+    SHELL_MD_READI_RESULT_FORMAT="${output_buffer:0: -1}"
+  fi
 }

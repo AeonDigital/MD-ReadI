@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 14:58:33  
+# EXPORTED AT : 2026-11-12 15:16:29  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -1112,7 +1112,11 @@ spacing="${SHELL_MD_READI_RESULT_FORMAT_COMPUTE_SPACING}"
 for (( idx = 0; idx < spacing; idx++ )); do output_buffer+=${codeNL}; done
 last_spacing="${spacing}"
 done
+if [ -z "${output_buffer}" ]; then
+SHELL_MD_READI_RESULT_FORMAT=""
+else
 SHELL_MD_READI_RESULT_FORMAT="${output_buffer:0: -1}"
+fi
 }
 
 
