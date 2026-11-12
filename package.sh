@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 13:24:23  
+# EXPORTED AT : 2026-11-12 14:47:12  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -749,6 +749,10 @@ local -a sorted_levels=()
 local -A seen_space_levels=()
 local -A space_to_tabs=()
 local regex_indented_line='^[[:space:]]+[^[:space:]]'
+if [ -z "${block_content}" ]; then
+SHELL_MD_READI_RESULT_CANONIZE_INDENTATION_BLOCK="${codeNL}"
+return 0
+fi
 while IFS= read -r current_line || [ -n "${current_line}" ]; do
 block_lines+=("${current_line}")
 done <<< "${block_content}"
@@ -763,7 +767,7 @@ if [ "${all_preformatted}" -eq 1 ] && [ "${#block_lines[@]}" -gt 0 ]; then
 for current_line in "${block_lines[@]}"; do
 output_buffer+="${current_line}"${codeNL}
 done
-printf "%s" "${output_buffer}"
+SHELL_MD_READI_RESULT_CANONIZE_INDENTATION_BLOCK="${output_buffer}"
 return 0
 fi
 for current_line in "${block_lines[@]}"; do
@@ -788,7 +792,7 @@ if [ ! "${seen_space_levels["0"]+x}" ]; then
 unique_space_levels=("0" "${unique_space_levels[@]}")
 fi
 sorted_level_str="$(printf '%s\n' "${unique_space_levels[@]}" | sort -n | tr '\n' ' ')"
-read -r -a sorted_levels <<< "${sorted_level_str}"
+IFS=' ' read -r -a sorted_levels <<< "${sorted_level_str}"
 for (( level_idx = 0; level_idx < ${#sorted_levels[@]}; level_idx++ )); do
 space_to_tabs["${sorted_levels[${level_idx}]}"]="${level_idx}"
 done

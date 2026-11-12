@@ -72,6 +72,12 @@ shell_md_readi_canonize_indentation_block() {
   local -A space_to_tabs=()
   local regex_indented_line='^[[:space:]]+[^[:space:]]'
 
+  # Handle empty or omitted input
+  if [ -z "${block_content}" ]; then
+    SHELL_MD_READI_RESULT_CANONIZE_INDENTATION_BLOCK="${codeNL}"
+    return 0
+  fi
+
   while IFS= read -r current_line || [ -n "${current_line}" ]; do
     block_lines+=("${current_line}")
   done <<< "${block_content}"
@@ -88,7 +94,7 @@ shell_md_readi_canonize_indentation_block() {
     for current_line in "${block_lines[@]}"; do
       output_buffer+="${current_line}"${codeNL}
     done
-    printf "%s" "${output_buffer}"
+    SHELL_MD_READI_RESULT_CANONIZE_INDENTATION_BLOCK="${output_buffer}"
     return 0
   fi
 
@@ -118,7 +124,8 @@ shell_md_readi_canonize_indentation_block() {
       unique_space_levels=("0" "${unique_space_levels[@]}")
     fi
     sorted_level_str="$(printf '%s\n' "${unique_space_levels[@]}" | sort -n | tr '\n' ' ')"
-    read -r -a sorted_levels <<< "${sorted_level_str}"
+    # Use explicit space separator instead of relying on IFS
+    IFS=' ' read -r -a sorted_levels <<< "${sorted_level_str}"
     for (( level_idx = 0; level_idx < ${#sorted_levels[@]}; level_idx++ )); do
       space_to_tabs["${sorted_levels[${level_idx}]}"]="${level_idx}"
     done
