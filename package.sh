@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 12:23:29  
+# EXPORTED AT : 2026-11-12 13:24:23  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -435,6 +435,7 @@ local value="${1}"
 local current_line=""
 local output_buffer=""
 local in_special_block=0
+local in_raw_html_block=0
 local paragraph_buffer=""
 local list_item_buffer=""
 local clean_line=""
@@ -448,6 +449,8 @@ local regex_separator='^[[:space:]]*([-_*][[:space:]]*){3,}$'
 local regex_unordered_list='^([[:space:]]*)([-+*])[[:space:]]+(.*)$'
 local regex_ordered_list='^([[:space:]]*)([0-9]+)([.)])[[:space:]]+(.*)$'
 local regex_hard_break='([[:space:]]{2,})$'
+local regex_html_tag='^[[:space:]]*</?[[:alpha:]!]'
+local regex_html_closing_tag='^[[:space:]]*</'
 while IFS= read -r current_line || [ -n "${current_line}" ]; do
 clean_line="${current_line%"${current_line##*[![:space:]]}"}"
 if [[ "${current_line}" =~ ${regex_code_block} ]]; then
@@ -464,6 +467,22 @@ output_buffer+="${current_line}"${codeNL}
 continue
 fi
 if [ "${in_special_block}" -eq 1 ]; then
+output_buffer+="${current_line}"${codeNL}
+continue
+fi
+if [ "${in_raw_html_block}" -eq 1 ]; then
+output_buffer+="${current_line}"${codeNL}
+if [[ "${current_line}" =~ ${regex_html_closing_tag} ]]; then
+in_raw_html_block=0
+fi
+continue
+fi
+if ! [[ "${current_line}" =~ ${regex_html_closing_tag} ]]; then
+if [[ "${current_line}" =~ ^[[:space:]]*\<(div|p|section|article|header|footer|main|nav|aside|blockquote|table|ul|ol|dl|form|pre|address|fieldset)[\>\[:space:]] ]]; then
+in_raw_html_block=1
+fi
+fi
+if [ "${in_raw_html_block}" -eq 1 ]; then
 output_buffer+="${current_line}"${codeNL}
 continue
 fi

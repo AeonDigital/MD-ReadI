@@ -121,6 +121,7 @@ shell_md_readi_canonize_content_lines() {
   local current_line=""
   local output_buffer=""
   local in_special_block=0
+  local in_raw_html_block=0
   local paragraph_buffer=""
   local list_item_buffer=""
   local clean_line=""
@@ -134,6 +135,8 @@ shell_md_readi_canonize_content_lines() {
   local regex_unordered_list='^([[:space:]]*)([-+*])[[:space:]]+(.*)$'
   local regex_ordered_list='^([[:space:]]*)([0-9]+)([.)])[[:space:]]+(.*)$'
   local regex_hard_break='([[:space:]]{2,})$'
+  local regex_html_tag='^[[:space:]]*</?[[:alpha:]!]'
+  local regex_html_closing_tag='^[[:space:]]*</'
 
   while IFS= read -r current_line || [ -n "${current_line}" ]; do
     clean_line="${current_line%"${current_line##*[![:space:]]}"}"
@@ -153,6 +156,29 @@ shell_md_readi_canonize_content_lines() {
     fi
 
     if [ "${in_special_block}" -eq 1 ]; then
+      output_buffer+="${current_line}"${codeNL}
+      continue
+    fi
+
+    # Detect raw HTML block continuation
+    if [ "${in_raw_html_block}" -eq 1 ]; then
+      output_buffer+="${current_line}"${codeNL}
+      # Check if this line contains a closing tag
+      if [[ "${current_line}" =~ ${regex_html_closing_tag} ]]; then
+        in_raw_html_block=0
+      fi
+      continue
+    fi
+
+    # Detect raw HTML block opening — only specific block-level tags opening
+    if ! [[ "${current_line}" =~ ${regex_html_closing_tag} ]]; then
+      if [[ "${current_line}" =~ ^[[:space:]]*\<(div|p|section|article|header|footer|main|nav|aside|blockquote|table|ul|ol|dl|form|pre|address|fieldset)[\>\[:space:]] ]]; then
+        in_raw_html_block=1
+      fi
+    fi
+
+    # If we detected an opening HTML block, add this line and continue
+    if [ "${in_raw_html_block}" -eq 1 ]; then
       output_buffer+="${current_line}"${codeNL}
       continue
     fi
