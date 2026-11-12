@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 15:26:22  
+# EXPORTED AT : 2026-11-12 19:55:55  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -334,7 +334,7 @@ pending_text_line=""
 continue
 fi
 if [[ "${clean_line}" =~ ${regex_header} ]]; then
-pending_separator_line=""
+[ -n "${pending_separator_line}" ] && { output_buffer+="${pending_separator_line}"${codeNL}; pending_separator_line=""; }
 [ -n "${pending_text_line}" ] && { output_buffer+="${pending_text_line}"${codeNL}; pending_text_line=""; }
 output_buffer+="${current_line}"${codeNL}
 continue
@@ -415,16 +415,16 @@ for span in "${SHELL_MD_READI_LINK_SPANS[@]}"; do
 span_start="${span%%:*}"
 span_end="${span##*:}"
 seg="${rawline:${pos}:$(( span_start - pos ))}"
-seg="${seg// - / — }"
-seg="${seg// '+' / ＋ }"
-seg="${seg// '*' / ∗ }"
+while [[ "$seg" == *" - "* ]]; do seg="${seg// - / — }"; done
+while [[ "$seg" == *" + "* ]]; do seg="${seg// + / ＋ }"; done
+while [[ "$seg" == *" "'*'" "* ]]; do seg="${seg// \* / ∗ }"; done
 newline+="${seg}${rawline:${span_start}:$(( span_end - span_start ))}"
 pos="${span_end}"
 done
 seg="${rawline:${pos}}"
-seg="${seg// - / — }"
-seg="${seg// '+' / ＋ }"
-seg="${seg// '*' / ∗ }"
+while [[ "$seg" == *" - "* ]]; do seg="${seg// - / — }"; done
+while [[ "$seg" == *" + "* ]]; do seg="${seg// + / ＋ }"; done
+while [[ "$seg" == *" "'*'" "* ]]; do seg="${seg// \* / ∗ }"; done
 newline+="${seg}"
 SHELL_MD_READI_RESULT_CANONIZE_PROSE_SAFETY="${indent}${newline}"
 }

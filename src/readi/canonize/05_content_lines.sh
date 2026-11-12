@@ -41,21 +41,24 @@ _shell_md_readi_canonize_prose_safety() {
     span_start="${span%%:*}"
     span_end="${span##*:}"
     seg="${rawline:${pos}:$(( span_start - pos ))}"
-    seg="${seg// - / — }"
-    seg="${seg// '+' / ＋ }"
-    seg="${seg// '*' / ∗ }"
+    # Convert all occurrences iteratively
+    while [[ "$seg" == *" - "* ]]; do seg="${seg// - / — }"; done
+    while [[ "$seg" == *" + "* ]]; do seg="${seg// + / ＋ }"; done
+    while [[ "$seg" == *" "'*'" "* ]]; do seg="${seg// \* / ∗ }"; done
     newline+="${seg}${rawline:${span_start}:$(( span_end - span_start ))}"
     pos="${span_end}"
   done
 
   seg="${rawline:${pos}}"
-  seg="${seg// - / — }"
-  seg="${seg// '+' / ＋ }"
-  seg="${seg// '*' / ∗ }"
+  # Convert all occurrences iteratively
+  while [[ "$seg" == *" - "* ]]; do seg="${seg// - / — }"; done
+  while [[ "$seg" == *" + "* ]]; do seg="${seg// + / ＋ }"; done
+  while [[ "$seg" == *" "'*'" "* ]]; do seg="${seg// \* / ∗ }"; done
   newline+="${seg}"
 
   SHELL_MD_READI_RESULT_CANONIZE_PROSE_SAFETY="${indent}${newline}"
 }
+
 
 
 

@@ -138,7 +138,7 @@ shell_md_readi_canonize_headers() {
     fi
 
     if [[ "${clean_line}" =~ ${regex_header} ]]; then
-      pending_separator_line=""
+      [ -n "${pending_separator_line}" ] && { output_buffer+="${pending_separator_line}"${codeNL}; pending_separator_line=""; }
       [ -n "${pending_text_line}" ] && { output_buffer+="${pending_text_line}"${codeNL}; pending_text_line=""; }
       output_buffer+="${current_line}"${codeNL}
       continue

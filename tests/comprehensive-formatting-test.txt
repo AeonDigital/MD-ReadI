@@ -1,0 +1,327 @@
+# Teste Abrangente de Formatação MD-ReadI
+
+## Como executar este teste
+
+Este arquivo é um .txt propositalmente para evitar que o hook de pre-commit execute o formatter e destrua a formatação desejada para teste.
+
+Para testar, copie o conteúdo deste arquivo para um arquivo temporário .md e execute:
+
+```bash
+cp tests/comprehensive-formatting-test.txt /tmp/test-formatting.md
+
+for f in src/share/*.sh; do . "$f"; done
+for f in src/readi/canonize/*.sh; do . "$f"; done
+for f in src/readi/format/*.sh; do . "$f"; done
+for f in src/readi/*.sh; do
+  if [[ "$(basename "$f")" != "main_autoexec.sh" ]]; then
+    . "$f"
+  fi
+done
+
+shell_md_readi /tmp/test-formatting.md tests/comprehensive-formatting-test.output.md
+# Depois abra 'tests/comprehensive-formatting-test.output.md' para conferir o resultado
+```
+
+---
+
+## SEÇÃO 1: TÍTULOS E ESPAÇAMENTO
+
+### 1.1 Títulos Simples (H1 até H6)
+
+Este parágrafo aqui vem logo depois de um H1 principal para testar se o separador é preservado corretamente.
+
+#### Subtítulo H4
+
+Com um parágrafo bem pequeno.
+
+##### Subtítulo H5
+
+Seguido de conteúdo.
+
+###### Subtítulo H6 - o menor nível
+
+Com mais um parágrafo depois dele.
+
+### 1.2 Testes de Separadores e Espaçamento Pré-Títulos
+
+Parágrafo de introdução para a seção de testes de espaçamento com e sem separadores.
+
+#### CASO 1: SEM Separador Horizontal
+
+Pequeno paragrafo para forçar o espaçamento do título seguinte.
+
+## H2 SEM Separador (4 linhas em branco esperadas)
+
+Este parágrafo vem após um H2 sem separador horizontal antes dele. Deve ter 4 linhas em branco antes do título conforme SPECS seção 3.5.1.
+
+### H3 SEM Separador (3 linhas em branco esperadas)
+
+Este parágrafo vem após um H3 sem separador horizontal antes dele. Deve ter 3 linhas em branco antes do título.
+
+#### H4 SEM Separador (2 linhas em branco esperadas)
+
+Este parágrafo vem após um H4 sem separador horizontal antes dele. Deve ter 2 linhas em branco antes do título.
+
+##### H5 SEM Separador (2 linhas em branco esperadas)
+
+Este parágrafo vem após um H5 sem separador horizontal antes dele. Deve ter 2 linhas em branco antes do título.
+
+###### H6 SEM Separador (2 linhas em branco esperadas)
+
+Este parágrafo vem após um H6 sem separador horizontal antes dele. Deve ter 2 linhas em branco antes do título.
+
+#### CASO 2: COM Separador Horizontal (---)
+
+---
+
+## H2 COM Separador (com decoradores conforme especificação)
+
+Este parágrafo vem após um H2 que tem um separador horizontal antes dele. O formatter deve aplicar as regras de decorador conforme seção 2.3.3 e 3.5.1.6 da especificação.
+
+---
+
+### H3 COM Separador (com decoradores conforme especificação)
+
+Este parágrafo vem após um H3 que tem um separador horizontal antes dele. O formatter deve aplicar as regras de decorador conforme especificação.
+
+---
+
+#### H4 COM Separador (com decoradores conforme especificação)
+
+Este parágrafo vem após um H4 que tem um separador horizontal antes dele. O formatter deve aplicar as regras de decorador conforme especificação.
+
+---
+
+##### H5 COM Separador (com decoradores conforme especificação)
+
+Este parágrafo vem após um H5 que tem um separador horizontal antes dele. O formatter deve aplicar as regras de decorador conforme especificação.
+
+---
+
+###### H6 COM Separador (com decoradores conforme especificação)
+
+Este parágrafo vem após um H6 que tem um separador horizontal antes dele. O formatter deve aplicar as regras de decorador conforme especificação.
+
+---
+
+## SEÇÃO 2: PARÁGRAFOS E FORMATAÇÃO DE TEXTO
+
+### 2.1 Parágrafos Simples e Consecutivos
+
+Este é um parágrafo bem simples.
+
+Este é outro parágrafo, depois de uma linha em branco.
+
+E este é um terceiro parágrafo, apenas com texto simples sem nenhuma formatação especial para observar o comportamento do separador.
+
+### 2.2 Teste de Quebra de Linha em 80 Caracteres
+
+Este parágrafo foi construído propositalmente para demonstrar como o formatter deve quebrar linhas no ponto mais próximo de 80 caracteres quando uma palavra inteira não couber no final da linha atual, conforme especificado na documentação do projeto.
+
+Este outro parágrafo contém esta estrutura específica: "este paragrafo serve para demonstrar que, conforme a especificação, a quebra de linha deve ocorrer sempre a partir da linha 80 ou o mais perto disso caso uma palavra fique bem na 'linha' de quebra" - observar como o formatter vai quebrar isso.
+
+Mais um exemplo: a palavra "configuração" aparece bem no meio desta frase artificial construída apenas para testar o comportamento exato da quebra de linha quando uma palavra chega perto do limite de oitenta caracteres.
+
+### 2.3 Formatação Inline
+
+Teste com **texto em negrito** dentro de um parágrafo normal.
+
+Teste com *texto em itálico* também dentro de um parágrafo.
+
+Teste com ***texto em negrito e itálico*** simultaneamente.
+
+Teste com `código inline` para ver se a formatação inline é preservada.
+
+Teste com [link externo](https://example.com) e também com um link interno [link interno](#seção-2-parágrafos-e-formatação-de-texto).
+
+### 2.4 Código Inline e Caracteres Especiais
+
+Quando você usa `$variavel` em código inline, isso deve ser preservado.
+
+Caracteres especiais como `<tag>`, `&entity;`, `[colchetes]`, `{chaves}` devem passar sem problemas.
+
+Teste com símbolos repetidos como `**negrito**` e `__underline__` e `~~strikethrough~~`.
+
+### 2.5 Caracteres HTML e Entidades
+
+Teste com HTML simples: <div>conteúdo HTML</div>
+
+Teste com entidades: &nbsp; &mdash; &ldquo; &rdquo;
+
+Teste com tags HTML inline: Este texto contém uma <span style="color: red">tag span com atributo</span> dentro.
+
+---
+
+## SEÇÃO 3: LISTAS
+
+### 3.1 Lista não-ordenada simples
+
+- Primeiro item
+- Segundo item
+- Terceiro item
+
+### 3.2 Lista não-ordenada com itens multi-linha
+
+- Este é o primeiro item que contém um texto mais longo, eventualmente com quebra de linha se ficar muito grande, seguido por mais conteúdo para demonstrar como o formatter trata itens de lista que extrapolam uma única linha.
+- Segundo item mais curto.
+- Terceiro item com conteúdo intermediário.
+
+### 3.3 Lista ordenada
+
+1. Primeiro item numerado
+2. Segundo item
+3. Terceiro item
+
+### 3.4 Lista aninhada (não-ordenada dentro de numerada)
+
+1. Primeiro item da lista ordenada
+   - Sub-item um (não-ordenado)
+   - Sub-item dois
+2. Segundo item da lista ordenada
+   - Outro sub-item
+   - E mais um
+3. Terceiro item
+
+### 3.5 Listas mistas e complexas
+
+- Item de lista
+  1. Sub-item numerado
+  2. Outro sub-item
+- Volta para não-ordenado
+  1. De novo ordenado
+  2. Continua
+
+---
+
+## SEÇÃO 4: TABELAS
+
+### 4.1 Tabela simples bagunçada
+
+| Coluna 1 | Coluna 2    |     Coluna 3 |
+|------|---------|-----|
+|Dado 1| Dado 2  |Dado 3|
+|Dado 4   |Dado 5|Dado 6   |
+
+### 4.2 Tabela com alinhamento desorganizada
+
+|Esquerda| Centro       |Direita|
+|:---|:------:|---:|
+| Texto A  |Texto B|Texto C    |
+|Valor 1|Valor 2  |Valor 3|
+
+### 4.3 Tabela com conteúdo longo e sem formatação
+
+| Nome |Descrição| Observações          |
+|---|---|---|
+|Item 1|Esta é uma descrição mais longa que pode ocupar várias linhas e demonstra como tabelas com conteúdo extenso são formatadas pelo markdown processor.|Observações importantes aqui.|
+| Item 2|Descrição curta|Obs curta|
+
+---
+
+## SEÇÃO 5: BLOCOS DE CÓDIGO
+
+### 5.1 Código simples (sem linguagem especificada)
+
+```
+Este é um bloco de código sem linguagem especificada.
+Com múltiplas linhas.
+E sem indentação forçada.
+```
+
+### 5.2 Código com linguagem (bash)
+
+```bash
+#!/bin/bash
+# Este é um exemplo de código bash
+echo "Hello World"
+for i in {1..5}; do
+  echo "Número: $i"
+done
+```
+
+### 5.3 Código com caracteres especiais
+
+```
+Bloco com caracteres especiais: <tag>, &entity;, [colchetes], {chaves}
+Também com símbolos: ** __ ~~ -- ... || &&
+E com unicode: © ® ™ € £ ¥
+```
+
+---
+
+## SEÇÃO 6: CITAÇÕES (BLOCKQUOTES)
+
+### 6.1 Blockquote simples
+
+> Este é um blockquote simples com uma única linha.
+
+### 6.2 Blockquote com múltiplos parágrafos
+
+> Este é um blockquote mais elaborado que pode conter múltiplas linhas e demonstra como o formatter preserva ou reformata o conteúdo dentro de uma citação de bloco.
+>
+> Com parágrafos separados dentro da citação.
+
+### 6.3 Blockquote com formatação
+
+> **Blockquote com formatação**
+>
+> Este blockquote contém texto em **negrito** e *itálico* e também `código inline` para testar a preservação de formatação dentro de citações.
+
+---
+
+## SEÇÃO 7: ELEMENTOS ESTRUTURAIS DIVERSOS
+
+### 7.1 Imagens e Referências
+
+Imagem inline: ![Texto alternativo](https://example.com/image.png)
+
+Imagem com dimensões ou atributos especiais.
+
+### 7.2 Separadores e Metadata
+
+---
+
+Parágrafo após um separador horizontal.
+
+---
+
+Este parágrafo vem depois de outro separador.
+
+### 7.3 Metadata com Especificações Especiais
+
+Este parágrafo demonstra como metadados podem ser usados. Conforme a especificação, informações adicionais sobre comportamento esperado podem ser anotadas.
+
+Exemplo de metadado fictício: `[preservar-html: true]` `[quebra-linha: 80]`
+
+---
+
+## SEÇÃO 8: CASO DE USO COMPLEXO (MISTOS)
+
+### 8.1 Documento com múltiplos tipos de elemento
+
+**Atenção:** Este parágrafo contém formatação múltipla, como **negrito**, *itálico* e `código`, além de um [link](https://example.com) e também uma referência a uma tabela:
+
+| Tipo |Exemplo|
+|---|---|
+|Negrito|**texto**|
+|Itálico|*texto*|
+|Código|`código`|
+
+Seguido de uma lista:
+
+1. Primeiro passo
+2. Segundo passo com conteúdo bem longo aqui para demonstrar quebra de linha dentro de item de lista numerada
+3. Terceiro passo
+
+E finalizando com um blockquote:
+
+> A conclusão deste documento de teste é que ele deve cobrir todos os tipos de formatação possíveis no markdown para permitir observação total do comportamento do formatter.
+
+---
+
+## Conclusão
+
+Este arquivo de teste foi construído para permitir observabilidade total do formatter MD-ReadI em todos os cenários possíveis de formatação markdown.
+
+Após converter para .md e executar o comando acima, compare o arquivo de entrada com o arquivo `.output.md` gerado e valide se o comportamento está de acordo com a especificação do projeto.
+

@@ -1,1 +1,3 @@
 .agents/tmp/*
+tests/comprehensive-formatting-test.output.md
+*.bak
