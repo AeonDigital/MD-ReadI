@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 15:16:29  
+# EXPORTED AT : 2026-11-12 15:26:22  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -1602,7 +1602,7 @@ return 1
 fi
 target_file="${target_path}"
 fi
-shell_md_readi_process_file "${source_path}" "${target_file}"
+shell_md_readi_process_file "${source_path}" "${target_file}" || return $?
 return 0
 fi
 if [ -d "${source_path}" ]; then
@@ -1622,6 +1622,7 @@ return 1
 fi
 mkdir -p "${target_path}"
 fi
+local any_failed=0
 for source_file in "${source_files[@]}"; do
 if [ -z "${target_path}" ]; then
 target_file="${source_file}"
@@ -1629,9 +1630,10 @@ else
 rel_path="${source_file#"${source_path}"/}"
 target_file="${target_path}/${rel_path}"
 fi
-shell_md_readi_process_file "${source_file}" "${target_file}"
+shell_md_readi_process_file "${source_file}" "${target_file}" || any_failed=1
 done
-return 0
+[ ${any_failed} -eq 0 ]
+return $?
 fi
 printf "[ERR] :: Unsupported source path '%s'.\n" "${source_path}" >&2
 return 1
