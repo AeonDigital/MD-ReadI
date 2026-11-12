@@ -76,7 +76,7 @@ assert_indentation() {
 
 @test "empty lines split blocks while whitespace only lines remain inside" {
   mock_blocks
-  assert_indentation "\nfirst\n \n\t\nnext\n\n\nlast" "\n[first\n \n\t\nnext]\n\n\n[last]"
+  assert_indentation "\nfirst\n \n\t\nnext\n\n\nlast" "\n[first\n \n\t\nnext]\n\n[last]"
   [ "${#MOCK_BLOCKS[@]}" -eq 2 ]
   [ "${MOCK_BLOCKS[1]}" = last ]
 }
@@ -84,8 +84,8 @@ assert_indentation() {
 @test "zero one and two trailing newlines are distinct boundaries" {
   mock_blocks
   assert_indentation "x" "[x]"
-  assert_indentation "x\n" "[x]\n\n"
-  assert_indentation "x\n\n" "[x]\n\n\n"
+  assert_indentation "x\n" "[x]\n"
+  assert_indentation "x\n\n" "[x]\n\n"
 }
 
 @test "opening and closing fences flush blocks and preserve code verbatim" {
@@ -120,7 +120,7 @@ assert_indentation() {
 @test "caller IFS is preserved with block parsing and fences" {
   mock_blocks
   IFS=":"
-  assert_indentation "a\n b\n\n\`\`\`\nx\n\`\`\`" "[a\n b]\n\n\`\`\`\nx\n\`\`\`\n"
+  assert_indentation "a\n b\n\n\`\`\`\nx\n\`\`\`" "[a\n b]\n\`\`\`\nx\n\`\`\`\n"
   [ "${IFS}" = ":" ]
 }
 

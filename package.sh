@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 14:47:12  
+# EXPORTED AT : 2026-11-12 14:58:33  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -860,7 +860,6 @@ if [ -z "${current_line}" ]; then
 if [ -n "${current_block}" ]; then
 shell_md_readi_canonize_indentation_block "${current_block}"
 output_buffer+="${SHELL_MD_READI_RESULT_CANONIZE_INDENTATION_BLOCK}"
-output_buffer+=${codeNL}
 current_block=""
 fi
 output_buffer+=${codeNL}

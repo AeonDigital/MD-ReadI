@@ -85,7 +85,6 @@ shell_md_readi_canonize_indentation() {
       if [ -n "${current_block}" ]; then
         shell_md_readi_canonize_indentation_block "${current_block}"
         output_buffer+="${SHELL_MD_READI_RESULT_CANONIZE_INDENTATION_BLOCK}"
-        output_buffer+=${codeNL}
         current_block=""
       fi
       output_buffer+=${codeNL}
