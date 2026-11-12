@@ -16,33 +16,39 @@
 declare -g SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS=""
 
 
-# shell_md_readi_canonize_characters — Low-level byte sanitizer that enforces strict
-# UTF-8 character hygiene, purges hidden markers, and normalizes typographic punctuation.
+# Summary:
+# - Filter selected controls and normalize selected Unicode characters.
 # 
 # Description:
-# - Establishes early Unicode and byte stability by building an absolute exclusion
-#   array ('code_ctrl_chars') targeting non-printing ASCII control blocks (U+0000
-#   through U+001F, and U+007F).
-# - Strips hidden, disruptive Unicode symbols such as Zero Width Spaces (\u200b)
-#   and Byte Order Marks (\uefbbbf) to guarantee absolute compatibility with legacy
-#   terminal viewports (Specification Section 1.1).
-# - Discovers and normalizes non-compliant typographic punctuation marks, automatically
-#   translating Smart Quotes (curved marks like “ and ”) into standard vertical plain-text
-#   quote characters (Specification Section 1.2).
-# - Preserves structural line-termination whitespace sequences (\n, \r, and \t) while
-#   delivering a highly predictable plain-text stream baseline optimized for downstream
-#   layout parser engines.
+# - Removes ASCII control characters except TAB, CR, and LF.
+# - Removes actual U+200B and U+FEFF characters; literal escape spellings remain
+#   unchanged.
+# - Normalizes curved single and double quotation marks to ASCII quotes.
+# - Preserves TAB, CR, LF, and one or more trailing LF characters.
 # 
-# Arguments:
-# - $1: String — The raw cumulative text payload extracted directly from the physical
-#   storage layer.
+# Parameters:
+# - $1 [string][optional]: Input text. If omitted, it is empty unless nounset is
+#   enabled.
+# 
+# Requires:
+# - External `tr` utility.
+# 
+# Constraints:
+# - Bash strings cannot contain NUL bytes.
 # 
 # Returns:
-# - Mutates the global transit register 'SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS'
-#   with the byte-sanitized, plain-text documentation string.
+# - status: 0 on normal completion.
+# - stdout: none.
+# - stderr: Normally none; `tr` may emit a diagnostic if it fails.
+# - global state: Resets and sets `SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS`.
 # 
-# Return Codes:
-# - 0: Complete payload successfully scrubbed, markers purged, and punctuation normalized.
+# Effects:
+# - Invokes `tr` to remove selected ASCII control characters and updates the global
+#   state.
+# 
+# Errors:
+# - A `tr` failure is not propagated; its diagnostic may appear on stderr.
+# - With nounset enabled, an unset $1 may fail after the global state is cleared.
 # 
 # Specification Links:
 # - Ref: Section 1.1 (Strict Encoding Directives & Legacy Terminal Compatibility)
@@ -59,13 +65,14 @@ shell_md_readi_canonize_characters() {
   code_ctrl_chars+=$'\025'$'\026'$'\027'$'\030'$'\031'$'\032'$'\033'$'\034'$'\035'
   code_ctrl_chars+=$'\036'$'\037'$'\177'
 
-  clean_text=$(printf "%s" "${clean_text}" | tr -d "${code_ctrl_chars}")
-  clean_text="${clean_text//“/\"}"
-  clean_text="${clean_text//”/\"}"
-  clean_text="${clean_text//‘/\'}"
-  clean_text="${clean_text//’/\'}"
-  clean_text="${clean_text//"$'\u200b'"/}"
-  clean_text="${clean_text//"$'\uefbbbf'"/}"
+  clean_text=$(printf "%s" "${clean_text}" | tr -d "${code_ctrl_chars}"; printf '\001')
+  clean_text="${clean_text%$'\001'}"
+  clean_text="${clean_text//$'\u201c'/\"}"
+  clean_text="${clean_text//$'\u201d'/\"}"
+  clean_text="${clean_text//$'\u2018'/\'}"
+  clean_text="${clean_text//$'\u2019'/\'}"
+  clean_text="${clean_text//$'\u200b'/}"
+  clean_text="${clean_text//$'\ufeff'/}"
 
   SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS="${clean_text}"
 }

@@ -5,7 +5,7 @@
 # 
 # PROJECT     : MD-ReadI  
 # ORIGIN URL  : https://github.com/AeonDigital/MD-ReadI  
-# EXPORTED AT : 2026-11-12 01:38:33  
+# EXPORTED AT : 2026-11-12 10:58:10  
 # LICENSE     : MIT [ https://github.com/AeonDigital/MD-ReadI/LICENSE ]  
 # ==============================================================================
 
@@ -163,13 +163,14 @@ code_ctrl_chars+=$'\000'$'\001'$'\002'$'\003'$'\004'$'\005'$'\006'$'\007'$'\010'
 code_ctrl_chars+=$'\013'$'\014'$'\016'$'\017'$'\020'$'\021'$'\022'$'\023'$'\024'
 code_ctrl_chars+=$'\025'$'\026'$'\027'$'\030'$'\031'$'\032'$'\033'$'\034'$'\035'
 code_ctrl_chars+=$'\036'$'\037'$'\177'
-clean_text=$(printf "%s" "${clean_text}" | tr -d "${code_ctrl_chars}")
-clean_text="${clean_text//“/\"}"
-clean_text="${clean_text//”/\"}"
-clean_text="${clean_text//‘/\'}"
-clean_text="${clean_text//’/\'}"
-clean_text="${clean_text//"$'\u200b'"/}"
-clean_text="${clean_text//"$'\uefbbbf'"/}"
+clean_text=$(printf "%s" "${clean_text}" | tr -d "${code_ctrl_chars}"; printf '\001')
+clean_text="${clean_text%$'\001'}"
+clean_text="${clean_text//$'\u201c'/\"}"
+clean_text="${clean_text//$'\u201d'/\"}"
+clean_text="${clean_text//$'\u2018'/\'}"
+clean_text="${clean_text//$'\u2019'/\'}"
+clean_text="${clean_text//$'\u200b'/}"
+clean_text="${clean_text//$'\ufeff'/}"
 SHELL_MD_READI_RESULT_CANONIZE_CHARACTERS="${clean_text}"
 }
 
